@@ -41,9 +41,32 @@ services:
       timeout: 5s
       retries: 10
 
+  # для CI в гитхабе: docker compose --profile test up --build --abort-on-container-exit --exit-code-from tests
+  tests:
+    profiles: ["test"]
+    build:
+      context: .
+      target: test
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+    command: >
+      sh -c "
+        until nc -z db 5432; do echo 'waiting for db...'; sleep 0.5; done;
+        ./mvnw test
+      "
+    volumes:
+      - ./build/test-reports:/app/target/surefire-reports
+      - ./build/it-reports:/app/target/failsafe-reports
+    networks: [app-net]
+    restart: "no"
+
 networks:
   app-net:
-    driver: bridge
 
 volumes:
   postgres_data:
