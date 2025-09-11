@@ -22,7 +22,7 @@ public final class UserDto implements Serializable {
 
     private String firstName;
 
-    private String secondName;
+    private String lastName;
 
     private String phoneNumber;
 
