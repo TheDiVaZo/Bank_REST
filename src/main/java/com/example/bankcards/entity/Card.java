@@ -20,7 +20,7 @@ public class Card {
     @Column(name = "id")
     private UUID id;
 
-    @Column(name = "card_number", nullable = false)
+    @Column(name = "card_number", nullable = false, unique = true)
     private String cardNumber;
 
     @Column(name = "card_holder", nullable = false)
@@ -36,5 +36,8 @@ public class Card {
     @Column(name = "status", nullable = false)
     private CardStatus status;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
 }
