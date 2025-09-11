@@ -55,6 +55,12 @@ public class User implements UserDetails {
         return phoneNumber;
     }
 
+    @Column(name = "refresh_token")
+    private String refreshToken;
+
+    @Column(name = "refresh_token_expiry")
+    private LocalDateTime refreshTokenExpiry;
+
     @Override
     public final boolean equals(Object o) {
         if (!(o instanceof User user)) return false;
