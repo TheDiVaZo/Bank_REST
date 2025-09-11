@@ -17,6 +17,7 @@ import java.util.UUID;
 @Builder
 @Table(name = "cards",
         uniqueConstraints = {
+                @UniqueConstraint(name = "uq_user_last4", columnNames = {"user_id", "pan_last4"}),
                 @UniqueConstraint(name = "uq_card_fingerprint", columnNames = "fingerprint")
         },
         indexes = {
@@ -60,7 +61,7 @@ public class Card {
     private CardStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false, foreignKey = @ForeignKey(name = "fk_cards_user"))
     private User user;
 
     /** Маска для UI */

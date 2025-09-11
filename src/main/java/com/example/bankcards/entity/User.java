@@ -8,9 +8,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @AllArgsConstructor
@@ -60,6 +58,9 @@ public class User implements UserDetails {
 
     @Column(name = "refresh_token_expiry")
     private LocalDateTime refreshTokenExpiry;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Card> cards = new HashSet<>();
 
     @Override
     public final boolean equals(Object o) {
