@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -25,4 +26,11 @@ public interface CardRepository extends JpaRepository<Card, UUID>, JpaSpecificat
     boolean existsByFingerprint(String fingerprint);
 
     Page<Card> findAllByUser_Id(UUID userId, Pageable pageable);
+
+    @Query("""
+           select c.panEncrypted
+           from Card c
+           where c.user.id = :userId and c.panLast4 = :last4
+           """)
+    Optional<String> findPanEncryptedByUserIdAndLast4(UUID userId, String last4);
 }

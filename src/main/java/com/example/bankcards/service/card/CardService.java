@@ -20,6 +20,8 @@ public interface CardService {
 
     CardDto getByPanLast4(UUID userId, String panLast4);
 
+    String getPan(UUID userId, String panLast4);
+
     CardDto blockForPanLast4(UUID userId, String panLast4);
 
     CardDto activeForPanLast4(UUID userId, String panLast4);
@@ -32,7 +34,7 @@ public interface CardService {
 
     CardDto blockForPan(String pan);
 
-    CardDto activeForPan(UUID userId, String pan);
+    CardDto activeForPan(String pan);
 
-    void deleteForPan(UUID userId, String pan);
+    void deleteForPan(String pan);
 }
