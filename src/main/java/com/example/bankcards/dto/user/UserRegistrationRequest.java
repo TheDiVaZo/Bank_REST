@@ -24,7 +24,7 @@ public final class UserRegistrationRequest implements Serializable {
     private String firstName;
 
     @NotBlank(message = "Фамилия обязательно")
-    private String secondName;
+    private String lastName;
 
     @NotBlank(message = "Номер обязателен")
     @Pattern(regexp = Patterns.PHONE_NUMBER, message = "Номер телефона записывается без +7. Пример: 9231234567")
@@ -32,6 +32,4 @@ public final class UserRegistrationRequest implements Serializable {
 
     @Size(min = 4, max = 64)
     private String password;
-
-    private Role role;
 }
