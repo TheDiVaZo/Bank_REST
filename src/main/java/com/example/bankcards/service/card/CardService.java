@@ -5,6 +5,7 @@ import com.example.bankcards.entity.Card;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,4 +38,10 @@ public interface CardService {
     CardDto activeForPan(String pan);
 
     void deleteForPan(String pan);
+
+    /* card transaction */
+
+    void transaction(UUID fromUserId, String fromPanLast4, UUID toUserId, String toPanLast4, BigDecimal amount);
+
+    void transaction(String fromPan, String toPan, BigDecimal amount);
 }

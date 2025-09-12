@@ -7,6 +7,7 @@ import com.example.bankcards.entity.CardStatus;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.exception.ServiceErrorException;
 import com.example.bankcards.exception.card.CardNotFoundException;
+import com.example.bankcards.exception.card.CardOperationException;
 import com.example.bankcards.exception.user.UserNotFoundException;
 import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.repository.UserRepository;
@@ -18,7 +19,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -173,6 +176,63 @@ public class CardServiceImpl implements CardService {
     public void deleteForPan(String pan) {
         Card card = findByPanOrThrow(pan);
         cardRepository.delete(card);
+    }
+
+    @Override
+    @Transactional
+    public void transaction(UUID fromUserId, String fromPanLast4, UUID toUserId, String toPanLast4, BigDecimal amount) {
+        try {
+            validAmount(amount);
+
+            Card fromCard = findByUserAndLast4OrThrow(fromUserId, fromPanLast4);
+            Card toCard = findByUserAndLast4OrThrow(toUserId, toPanLast4);
+
+            validTransaction(fromCard, toCard, amount);
+
+            cardRepository.flush();
+        } catch (Exception exception) {
+            throw new CardOperationException(exception);
+        }
+    }
+
+    @Override
+    public void transaction(String fromPan, String toPan, BigDecimal amount) {
+        try {
+            validAmount(amount);
+
+            Card fromCard = findByPanOrThrow(fromPan);
+            Card toCard = findByPanOrThrow(toPan);
+
+            validTransaction(fromCard, toCard, amount);
+
+            cardRepository.flush();
+        } catch (Exception exception) {
+            throw new CardOperationException(exception);
+        }
+    }
+
+    public void transaction(Card fromCard, Card toCard, BigDecimal amount) {
+        fromCard.setBalance(fromCard.getBalance().subtract(amount));
+        toCard.setBalance(toCard.getBalance().add(amount));
+        cardRepository.saveAll(List.of(fromCard, toCard));
+    }
+
+    private static void validAmount(BigDecimal amount) {
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new CardOperationException("Amount must be positive");
+        }
+    }
+
+    private static void validTransaction(Card fromCard, Card toCard, BigDecimal amount) {
+        if (fromCard.getStatus() != CardStatus.ACTIVE || toCard.getStatus() != CardStatus.ACTIVE) {
+            throw new CardOperationException("One of the cards is not active");
+        }
+        if (fromCard.getBalance().compareTo(amount) < 0) {
+            throw new CardOperationException("Insufficient funds");
+        }
+        if (fromCard.getBalance().subtract(amount).compareTo(BigDecimal.ZERO) < 0) {
+            throw new CardOperationException("The card is not enough funds");
+        }
     }
 
     /* Утилиты */
