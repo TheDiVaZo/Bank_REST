@@ -1,4 +1,4 @@
-package com.example.bankcards.service.crypto;
+package com.example.bankcards.security.crypto;
 
 public interface CryptoService {
     /** Шифрует исходный текст и возвращает base64. **/

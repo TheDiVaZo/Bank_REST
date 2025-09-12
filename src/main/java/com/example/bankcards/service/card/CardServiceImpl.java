@@ -10,7 +10,7 @@ import com.example.bankcards.exception.card.CardNotFoundException;
 import com.example.bankcards.exception.user.UserNotFoundException;
 import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.repository.UserRepository;
-import com.example.bankcards.service.crypto.CryptoService;
+import com.example.bankcards.security.crypto.CryptoService;
 import com.example.bankcards.util.CardUtil;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
