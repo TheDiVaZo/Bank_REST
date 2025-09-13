@@ -1,11 +1,19 @@
 package com.example.bankcards.entity;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
 public enum Role {
-    ADMIN,
-    USER;
+    ADMIN("ROLE_ADMIN"),
+    USER("ROLE_USER");
 
-    private final String authTitle = "ROLE_" + this.name();
+    public static final String ROLE_ADMIN = "ROLE_ADMIN";
+    public static final String ROLE_USER = "ROLE_USER";
+
+    private final String authTitle;
+
+    Role(String authTitle) {
+        this.authTitle = authTitle;
+    }
 }
