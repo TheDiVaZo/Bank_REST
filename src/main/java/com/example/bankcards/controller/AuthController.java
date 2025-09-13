@@ -7,6 +7,7 @@ import com.example.bankcards.exception.auth.InvalidTokenException;
 import com.example.bankcards.service.auth.AuthService;
 import com.example.bankcards.service.cookie.CookieService;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +20,7 @@ public class AuthController {
 
     @PostMapping("/reg")
     public UserAuthResponse registrationUser(
-            @RequestBody UserRegistrationRequest userRegistrationRequest,
+            @RequestBody @Valid UserRegistrationRequest userRegistrationRequest,
             HttpServletResponse response
     ) {
         UserAuthResponse loginResponse = authService.registrationUser(userRegistrationRequest);
@@ -29,7 +30,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public UserAuthResponse loginUser(
-            @RequestBody UserLoginRequest userLoginRequest,
+            @RequestBody @Valid UserLoginRequest userLoginRequest,
             HttpServletResponse response
     ) {
         UserAuthResponse loginResponse = authService.loginUser(userLoginRequest);

@@ -94,7 +94,9 @@ public class AdminController {
     }
 
     @PostMapping("/user")
-    public UserDto createUser(@RequestBody @Valid UserRegistrationRequest request) {
+    public UserDto createUser(
+            @RequestBody @Valid UserRegistrationRequest request
+    ) {
         return userService.create(request);
     }
 

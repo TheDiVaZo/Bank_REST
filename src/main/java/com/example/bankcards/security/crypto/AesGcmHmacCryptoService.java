@@ -1,5 +1,7 @@
 package com.example.bankcards.security.crypto;
 
+import org.springframework.stereotype.Service;
+
 import javax.crypto.Cipher;
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
@@ -39,10 +41,7 @@ public final class AesGcmHmacCryptoService implements CryptoService {
     public AesGcmHmacCryptoService(SecretKey aesKey, SecretKey hmacKey) {
         this.aesKey = Objects.requireNonNull(aesKey, "aesKey");
         this.hmacKey = Objects.requireNonNull(hmacKey, "hmacKey");
-        if (
-                Arrays.stream(ENC_ALG.split("/"))
-                        .noneMatch(alg -> alg.equalsIgnoreCase(HMAC_ALG))
-        ) {
+        if (!"AES".equalsIgnoreCase(aesKey.getAlgorithm())) {
             throw new IllegalArgumentException("aesKey must be AES");
         }
         if (!"HmacSHA256".equalsIgnoreCase(hmacKey.getAlgorithm())) {

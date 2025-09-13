@@ -4,7 +4,9 @@ import com.example.bankcards.config.JwtConfig;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
+import org.springframework.stereotype.Service;
 
+@Service
 public class CookieServiceImpl implements CookieService{
     private final JwtConfig jwtConfig;
 

@@ -16,7 +16,7 @@ import java.util.*;
 @Getter
 @Setter
 @Builder
-@Table(name = "cards")
+@Table(name = "users")
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -58,9 +58,6 @@ public class User implements UserDetails {
 
     @Column(name = "refresh_token_expiry")
     private LocalDateTime refreshTokenExpiry;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Card> cards = new HashSet<>();
 
     @Override
     public final boolean equals(Object o) {

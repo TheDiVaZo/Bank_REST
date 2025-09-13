@@ -39,6 +39,7 @@ public class AuthServiceImpl implements AuthService {
             throw new UserExistException("User with this email or phone number already exists!");
         }
         User user = userMapper.fromUserRegistrationRequest(userRegistrationRequest);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
         userRepository.flush();
         return jwtService.generateTokenPair(user);

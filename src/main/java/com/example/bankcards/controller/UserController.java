@@ -48,7 +48,7 @@ public class UserController {
     @PostMapping("/transaction")
     public void transfer(
             @AuthenticationPrincipal User user,
-            @Valid @RequestBody TransactionRequest request
+            @RequestBody @Valid TransactionRequest request
     ) {
         cardService.transaction(user.getId(), request.getFromPanLast4(), user.getId(), request.getFromPanLast4(), request.getAmount());
     }

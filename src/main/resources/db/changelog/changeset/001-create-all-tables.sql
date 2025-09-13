@@ -19,17 +19,17 @@ CREATE TABLE users
 -- changeset dev:002-create-cards-table
 CREATE TABLE cards
 (
-    id            UUID         NOT NULL,
-    user_id       UUID         NOT NULL,
-    pan_encrypted VARCHAR(512) NOT NULL,
-    pan_last4     VARCHAR(4)   NOT NULL,
-    fingerprint   VARCHAR(64)  NOT NULL,
-    card_holder   VARCHAR(255) NOT NULL,
-    expiry_date   date         NOT NULL,
-    balance       NUMERIC(36,2) NOT NULL DEFAULT 0,
-    status        VARCHAR(16) NOT NULL,
+    id            UUID           NOT NULL,
+    user_id       UUID           NOT NULL,
+    pan_encrypted VARCHAR(512)   NOT NULL,
+    pan_last4     VARCHAR(4)     NOT NULL,
+    fingerprint   VARCHAR(64)    NOT NULL,
+    card_holder   VARCHAR(255)   NOT NULL,
+    expiry_date   date           NOT NULL,
+    balance       NUMERIC(36, 2) NOT NULL     DEFAULT 0,
+    status        VARCHAR(16)    NOT NULL,
     CONSTRAINT pk_cards PRIMARY KEY (id),
-    CONSTRAINT fk_cards_user FOREIGN KEY (user_id) REFERENCES users(id),
+    CONSTRAINT fk_cards_user FOREIGN KEY (user_id) REFERENCES users (id),
     CONSTRAINT uq_card_fingerprint UNIQUE (fingerprint),
     CONSTRAINT uq_user_last4 UNIQUE (user_id, pan_last4)
 );
@@ -43,3 +43,15 @@ CREATE INDEX ix_cards_user_last4 ON cards (user_id, pan_last4);
 
 -- rollback DROP INDEX IF EXISTS ix_cards_user_last4;
 -- rollback DROP INDEX IF EXISTS ix_cards_last4;
+
+-- changeset dev:004-insert-admin-user context:data
+INSERT INTO users (id, phone_number, first_name, last_name, password, role, created_at)
+VALUES (
+           '00000000-0000-0000-0000-000000000001',
+           '1234567890',
+           'Admin',
+           'User',
+           '$2a$11$XMvr4uWWhYMTOlF/i54PUeQJJry6Q74PzShERh2DGdJK6LmD6PKtu', -- 1234567890
+           'ADMIN',
+           CURRENT_TIMESTAMP
+       );

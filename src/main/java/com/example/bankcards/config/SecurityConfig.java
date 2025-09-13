@@ -1,6 +1,8 @@
 package com.example.bankcards.config;
 
 import com.example.bankcards.repository.UserRepository;
+import com.example.bankcards.security.crypto.AesGcmHmacCryptoService;
+import com.example.bankcards.security.crypto.CryptoService;
 import com.example.bankcards.security.jwt.JwtAuthFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,6 +36,11 @@ public class SecurityConfig {
     public SecurityConfig(JwtAuthFilter jwtAuthFilter, UserRepository userRepository) {
         this.jwtAuthFilter = jwtAuthFilter;
         this.userRepository = userRepository;
+    }
+
+    @Bean
+    public CryptoService cryptoService() {
+        return AesGcmHmacCryptoService.fromHex(AesGcmHmacCryptoService.randomAesKeyHex(256), AesGcmHmacCryptoService.randomHmacKeyHex());
     }
 
     @Bean

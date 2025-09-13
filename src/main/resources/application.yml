@@ -1,9 +1,13 @@
 server:
   port: 8080
 
+logging:
+  level:
+    org.hibernate.tool.schema: DEBUG
+
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/${POSTGRES_DB}?currentSchema=public
+    url: jdbc:postgresql://db:5432/${POSTGRES_DB}?currentSchema=public
     username: ${POSTGRES_USER}
     password: ${POSTGRES_PASSWORD}
     driver-class-name: org.postgresql.Driver
@@ -25,7 +29,7 @@ spring:
     default-schema: public
     user: ${POSTGRES_USER}
     password: ${POSTGRES_PASSWORD}
-    url: jdbc:postgresql://localhost:5432/${POSTGRES_DB}
+    url: jdbc:postgresql://db:5432/${POSTGRES_DB}
     parameters:
       schemaName: public
 
