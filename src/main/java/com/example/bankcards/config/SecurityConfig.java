@@ -72,7 +72,7 @@ public class SecurityConfig {
                         .requestMatchers("/auth/refresh").authenticated()
                         .requestMatchers("/auth/logout").authenticated()
                         .requestMatchers("/admin").hasRole("ADMIN")
-                        .requestMatchers("/users/**").hasAnyRole("USER")
+                        .requestMatchers("/user/**").hasAnyRole("USER")
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(exception -> exception
@@ -116,7 +116,7 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(12);
+        return new BCryptPasswordEncoder(11);
     }
 
 }
