@@ -10,6 +10,5 @@ import org.mapstruct.MappingConstants;
 )
 public interface CardMapper {
 
-    @Mapping(target = "pan", ignore = true)
     CardDto toDto(Card card);
 }

@@ -89,14 +89,8 @@ public class CardServiceImpl implements CardService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<CardDto> getAllFromUser(UUID userId, boolean isPanDecrypt, Pageable pageable) {
-        return cardRepository.findAllByUser_Id(userId, pageable).map(entity -> {
-            CardDto cardDto = mapper.toDto(entity);
-            if (isPanDecrypt) {
-                cardDto.setPan(crypto.decrypt(cardDto.getPan()));
-            }
-            return cardDto;
-        });
+    public Page<CardDto> getAllFromUser(UUID userId, Pageable pageable) {
+        return cardRepository.findAllByUser_Id(userId, pageable).map(mapper::toDto);
     }
 
     @Override

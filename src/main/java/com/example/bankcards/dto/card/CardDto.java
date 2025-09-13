@@ -19,10 +19,6 @@ public final class CardDto implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @JsonView({View.Owner.class})
-    private String pan;
-
-    @JsonView({View.Owner.class, View.Admin.class})
     private String panLast4;
 
     private LocalDate expiryDate;

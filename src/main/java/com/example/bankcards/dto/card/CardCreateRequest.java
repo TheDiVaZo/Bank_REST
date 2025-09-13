@@ -18,8 +18,7 @@ public final class CardCreateRequest implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @NotBlank(message = "Номер обязателен")
-    @Pattern(regexp = Patterns.PHONE_NUMBER, message = "Номер телефона записывается без +7. Пример: 9231234567")
-    private String phoneNumber;
+    @NotBlank(message = "Юзер ID обязателен")
+    private UUID userId;
 
 }

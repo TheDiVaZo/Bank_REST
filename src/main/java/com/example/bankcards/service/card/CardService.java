@@ -13,11 +13,7 @@ public interface CardService {
 
     CardDto create(UUID userId);
 
-    default Page<CardDto> getAllFromUser(UUID userId, Pageable pageable) {
-        return getAllFromUser(userId, false, pageable);
-    }
-
-    Page<CardDto> getAllFromUser(UUID userId, boolean isPanDecrypt, Pageable pageable);
+    Page<CardDto> getAllFromUser(UUID userId, Pageable pageable);
 
     Page<CardDto> getAll(Pageable pageable);
 
