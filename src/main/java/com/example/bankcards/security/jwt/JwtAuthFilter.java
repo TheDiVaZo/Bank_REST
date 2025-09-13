@@ -34,7 +34,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
-        if (request.getServletPath().startsWith("/auth/register") ||
+        if (request.getServletPath().startsWith("/auth/reg") ||
                 request.getServletPath().startsWith("/auth/login") ||
                 request.getServletPath().startsWith("/auth/validate") ||
                 request.getServletPath().startsWith("/swagger-ui") ||

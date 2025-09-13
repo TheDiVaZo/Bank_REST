@@ -66,7 +66,7 @@ public class SecurityConfig {
                                 "/swagger-ui/swagger-ui-bundle.js",
                                 "/swagger-ui/swagger-ui-standalone-preset.js"
                         ).permitAll()
-                        .requestMatchers("/auth/register").permitAll()
+                        .requestMatchers("/auth/reg").permitAll()
                         .requestMatchers("/auth/login").permitAll()
                         .requestMatchers("/auth/validate").permitAll()
                         .requestMatchers("/auth/refresh").authenticated()
