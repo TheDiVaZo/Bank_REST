@@ -1,12 +1,10 @@
 package com.example.bankcards.service.card;
 
 import com.example.bankcards.dto.card.CardDto;
-import com.example.bankcards.entity.Card;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.UUID;
 
 public interface CardService {

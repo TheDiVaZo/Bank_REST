@@ -2,7 +2,6 @@ package com.example.bankcards.dto.card;
 
 import com.example.bankcards.entity.Card;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 
 @Mapper(

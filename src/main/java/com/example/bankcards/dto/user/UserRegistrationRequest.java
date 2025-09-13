@@ -1,6 +1,5 @@
 package com.example.bankcards.dto.user;
 
-import com.example.bankcards.entity.Role;
 import com.example.bankcards.util.Patterns;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

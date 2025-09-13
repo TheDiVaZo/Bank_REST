@@ -8,7 +8,6 @@ import com.example.bankcards.service.auth.AuthService;
 import com.example.bankcards.service.cookie.CookieService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

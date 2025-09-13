@@ -1,8 +1,6 @@
 package com.example.bankcards.dto.card;
 
 import com.example.bankcards.entity.CardStatus;
-import com.example.bankcards.view.View;
-import com.fasterxml.jackson.annotation.JsonView;
 import lombok.*;
 
 import java.io.Serial;

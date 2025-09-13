@@ -1,7 +1,6 @@
 package com.example.bankcards.entity;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 @Getter
 public enum Role {

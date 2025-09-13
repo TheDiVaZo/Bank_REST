@@ -1,8 +1,6 @@
 package com.example.bankcards.dto.card;
 
-import com.example.bankcards.util.Patterns;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
 import java.io.Serial;
