@@ -48,7 +48,6 @@ public class CardServiceImpl implements CardService {
         Objects.requireNonNull(userId, "userId");
         String pan = CardUtil.generateCardNumber();
         String last4 = pan.substring(pan.length() - 4);
-        String enc = crypto.encrypt(pan);
         String fp  = crypto.fingerprint(pan);
 
         if (cardRepository.existsByFingerprint(fp)) {
@@ -57,9 +56,11 @@ public class CardServiceImpl implements CardService {
         if (cardRepository.existsByUser_IdAndPanLast4(userId, last4)) {
             throw new ServiceErrorException("User already has a card with these last4. Retray please");
         }
-        if (userRepository.existsById(userId)) {
+        if (!userRepository.existsById(userId)) {
             throw new UserNotFoundException("User not found");
         }
+
+        String enc = crypto.encrypt(pan);
 
         try {
             User userRef = userRepository.getReferenceById(userId);
@@ -81,7 +82,7 @@ public class CardServiceImpl implements CardService {
             cardRepository.flush();
             return mapper.toDto(card);
         } catch (DataIntegrityViolationException exception) {
-            throw new UserNotFoundException("User not found", exception);
+            throw new ServiceErrorException("Constraint violation", exception);
         } catch (Exception exception) {
             throw new ServiceErrorException(exception.getMessage());
         }

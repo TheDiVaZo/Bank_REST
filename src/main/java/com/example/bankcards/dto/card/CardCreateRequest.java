@@ -1,6 +1,7 @@
 package com.example.bankcards.dto.card;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.io.Serial;
@@ -16,7 +17,7 @@ public final class CardCreateRequest implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @NotBlank(message = "Юзер ID обязателен")
+    @NotNull(message = "Юзер ID обязателен")
     private UUID userId;
 
 }

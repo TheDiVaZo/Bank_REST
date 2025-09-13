@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,6 +19,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
@@ -34,31 +36,45 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
+
+        String path = request.getServletPath();
+        String method = request.getMethod();
+
+        // лог входящего запроса (коротко)
+        log.debug("[JWT] --> {} {} from {} UA={}", method, path, request.getRemoteAddr(),
+                request.getHeader("User-Agent"));
+
         if (request.getServletPath().startsWith("/auth/reg") ||
                 request.getServletPath().startsWith("/auth/login") ||
                 request.getServletPath().startsWith("/auth/validate") ||
                 request.getServletPath().startsWith("/swagger-ui") ||
+                request.getServletPath().startsWith("/actuator") ||
                 request.getServletPath().startsWith("/docs") ||
                 request.getServletPath().startsWith("/webjars/")) {
+            log.trace("[JWT] Skipping filter for {}", path);
             filterChain.doFilter(request, response);
             return;
         }
 
         try {
             String accessToken = extractAccessToken(request);
+            log.trace("[JWT] Access token present? {}", accessToken != null);
             if (accessToken == null) {
                 throw new InvalidTokenException("Access token required!");
             }
             String username = jwtParser.extractUsername(accessToken);
+            log.debug("[JWT] Username from token: {}", username);
             var user = userRepository.findByPhoneNumber(username)
                     .orElseThrow(() -> new UserNotFoundException("User for '"+username+"' not found"));
-
-            if (!jwtTokenValidator.isTokenValid(accessToken, user)) {
+            boolean valid = jwtTokenValidator.isTokenValid(accessToken, user);
+            log.debug("[JWT] Access token valid? {}", valid);
+            if (!valid) {
                 throw new InvalidTokenException("Invalid access token!");
             }
 
-            if (!request.getServletPath().equals("/auth/refresh")) {
+            if (request.getServletPath().equals("/auth/refresh")) {
                 String refreshToken = extractRefreshToken(request);
+                log.trace("[JWT] Refresh token present? {}", refreshToken != null);
                 if (refreshToken == null) {
                     throw new InvalidTokenException("Refresh token required!");
                 }
@@ -66,6 +82,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     throw new InvalidTokenException("Invalid refresh token!");
                 }
             }
+
+            log.debug("[JWT] Auth OK -> principal={}, authorities={}", user.getUsername(), user.getAuthorities());
 
             var authentication = new UsernamePasswordAuthenticationToken(
                     user,
@@ -77,7 +95,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         } catch (InvalidTokenException e) {
             SecurityContextHolder.clearContext();
+            log.warn("[JWT] Auth failed: {}", e.getMessage());
             response.sendError(HttpStatus.UNAUTHORIZED.value(), e.getMessage());
+        } finally {
+            log.debug("[JWT] <-- {} {} -> {}",
+                    method, path, response.getStatus());
         }
     }
 

@@ -16,12 +16,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import static com.example.bankcards.entity.Role.ROLE_USER;
-
 @RestController
 @RequestMapping("/user")
 @RequiredArgsConstructor
-@PreAuthorize(value = "hasRole('"+ROLE_USER+"')")
+@PreAuthorize(value = "hasRole('USER')")
 @SecurityRequirement(name = "bearerAuth")
 public class UserController {
 

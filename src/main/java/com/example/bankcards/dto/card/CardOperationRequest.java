@@ -2,6 +2,7 @@ package com.example.bankcards.dto.card;
 
 import com.example.bankcards.util.Patterns;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
@@ -18,7 +19,7 @@ public final class CardOperationRequest implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @NotBlank(message = "Юзер ID обязателен")
+    @NotNull(message = "Юзер ID обязателен")
     private UUID userId;
 
     @NotBlank(message = "Номер карты обязателен")

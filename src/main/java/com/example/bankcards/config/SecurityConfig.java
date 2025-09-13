@@ -7,6 +7,8 @@ import com.example.bankcards.security.jwt.JwtAuthFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -36,6 +38,11 @@ public class SecurityConfig {
     public SecurityConfig(JwtAuthFilter jwtAuthFilter, UserRepository userRepository) {
         this.jwtAuthFilter = jwtAuthFilter;
         this.userRepository = userRepository;
+    }
+
+    @Bean
+    RoleHierarchy roleHierarchy() {
+        return RoleHierarchyImpl.fromHierarchy("ROLE_ADMIN > ROLE_USER");
     }
 
     @Bean
@@ -73,6 +80,7 @@ public class SecurityConfig {
                                 "/swagger-ui/swagger-ui-bundle.js",
                                 "/swagger-ui/swagger-ui-standalone-preset.js"
                         ).permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/auth/reg").permitAll()
                         .requestMatchers("/auth/login").permitAll()
                         .requestMatchers("/auth/validate").permitAll()
