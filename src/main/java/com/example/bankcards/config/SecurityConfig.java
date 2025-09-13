@@ -58,6 +58,8 @@ public class SecurityConfig {
                         .configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.ignoringRequestMatchers(
                         "/swagger-ui/**",
+                        "/v3/api-docs/**",
+                        "/api-docs/**",
                         "/docs/**",
                         "/swagger-resources/**",
                         "/webjars/**",
@@ -71,6 +73,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/swagger-ui.html",
                                 "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/api-docs/**",
                                 "/docs/**",
                                 "/swagger-resources/**",
                                 "/webjars/**",
