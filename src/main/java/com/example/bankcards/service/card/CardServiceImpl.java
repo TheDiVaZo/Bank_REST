@@ -89,8 +89,14 @@ public class CardServiceImpl implements CardService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<CardDto> getAllFromUser(UUID userId, Pageable pageable) {
-        return cardRepository.findAllByUser_Id(userId, pageable).map(mapper::toDto);
+    public Page<CardDto> getAllFromUser(UUID userId, boolean isPanDecrypt, Pageable pageable) {
+        return cardRepository.findAllByUser_Id(userId, pageable).map(entity -> {
+            CardDto cardDto = mapper.toDto(entity);
+            if (isPanDecrypt) {
+                cardDto.setPan(crypto.decrypt(cardDto.getPan()));
+            }
+            return cardDto;
+        });
     }
 
     @Override
@@ -143,42 +149,6 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public CardDto getByPan(String pan) {
-        Card card = findByPanOrThrow(pan);
-        return mapper.toDto(card);
-    }
-
-    @Override
-    @Transactional
-    public CardDto blockForPan(String pan) {
-        Card card = findByPanOrThrow(pan);
-        if (card.getStatus() != CardStatus.BLOCKED) {
-            card.setStatus(CardStatus.BLOCKED);
-            card = cardRepository.save(card);
-        }
-        return mapper.toDto(card);
-    }
-
-    @Override
-    @Transactional
-    public CardDto activeForPan(String pan) {
-        Card card = findByPanOrThrow(pan);
-        if (card.getStatus() != CardStatus.ACTIVE) {
-            card.setStatus(CardStatus.ACTIVE);
-            card = cardRepository.save(card);
-        }
-        return mapper.toDto(card);
-    }
-
-    @Override
-    @Transactional
-    public void deleteForPan(String pan) {
-        Card card = findByPanOrThrow(pan);
-        cardRepository.delete(card);
-    }
-
-    @Override
     @Transactional
     public void transaction(UUID fromUserId, String fromPanLast4, UUID toUserId, String toPanLast4, BigDecimal amount) {
         try {
@@ -186,22 +156,6 @@ public class CardServiceImpl implements CardService {
 
             Card fromCard = findByUserAndLast4OrThrow(fromUserId, fromPanLast4);
             Card toCard = findByUserAndLast4OrThrow(toUserId, toPanLast4);
-
-            validTransaction(fromCard, toCard, amount);
-
-            cardRepository.flush();
-        } catch (Exception exception) {
-            throw new CardOperationException(exception);
-        }
-    }
-
-    @Override
-    public void transaction(String fromPan, String toPan, BigDecimal amount) {
-        try {
-            validAmount(amount);
-
-            Card fromCard = findByPanOrThrow(fromPan);
-            Card toCard = findByPanOrThrow(toPan);
 
             validTransaction(fromCard, toCard, amount);
 
@@ -242,6 +196,12 @@ public class CardServiceImpl implements CardService {
                 .orElseThrow(() -> new CardNotFoundException("Card not found by last4 for user"));
     }
 
+    /**
+     * Сейчас система не имеет API для поиска по полному номеру карты, т.к. этого нет в ТЗ.
+     * Эта функция просто означает то, что API для работы с полным номером карты можно сделать в будущем
+     * @param pan Полный четырех-значный номер карты
+     * @return Объект карты или CardNotFoundException если такой нет.
+     */
     private Card findByPanOrThrow(String pan) {
         String fp = crypto.fingerprint(pan);
         return cardRepository.findByFingerprint(fp)

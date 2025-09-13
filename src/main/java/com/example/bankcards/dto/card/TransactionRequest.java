@@ -18,12 +18,12 @@ public final class TransactionRequest implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @NotBlank(message = "Номер карты обязателен")
-    @Pattern(regexp = Patterns.NUMBER_CARD, message = "Поле должно содержать 16 цифры")
-    private String fromCardNumber;
+    @Pattern(regexp = Patterns.NUMBER_CARD, message = "Поле должно содержать 4 последних цифры карты")
+    private String fromPanLast4;
 
     @NotBlank(message = "Номер карты обязателен")
-    @Pattern(regexp = Patterns.NUMBER_CARD, message = "Поле должно содержать 16 цифр")
-    private String toCardNumber;
+    @Pattern(regexp = Patterns.NUMBER_CARD, message = "Поле должно содержать 4 последних цифры карты")
+    private String toPanLast4;
 
     @NotNull(message = "Сумма обязательна")
     @DecimalMin(value = "0.01", message = "Минимальная сумма: 0.01")

@@ -13,7 +13,11 @@ public interface CardService {
 
     CardDto create(UUID userId);
 
-    Page<CardDto> getAllFromUser(UUID userId, Pageable pageable);
+    default Page<CardDto> getAllFromUser(UUID userId, Pageable pageable) {
+        return getAllFromUser(userId, false, pageable);
+    }
+
+    Page<CardDto> getAllFromUser(UUID userId, boolean isPanDecrypt, Pageable pageable);
 
     Page<CardDto> getAll(Pageable pageable);
 
@@ -29,19 +33,7 @@ public interface CardService {
 
     void deleteForPanLast4(UUID userId, String panLast4);
 
-    /* for pan */
-
-    CardDto getByPan(String pan);
-
-    CardDto blockForPan(String pan);
-
-    CardDto activeForPan(String pan);
-
-    void deleteForPan(String pan);
-
     /* card transaction */
 
     void transaction(UUID fromUserId, String fromPanLast4, UUID toUserId, String toPanLast4, BigDecimal amount);
-
-    void transaction(String fromPan, String toPan, BigDecimal amount);
 }
