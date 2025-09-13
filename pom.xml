@@ -11,7 +11,7 @@
     <groupId>com.example</groupId>
     <artifactId>BankCards</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>BankCards</name>
+    <name>BankRest</name>
     <description>Implementation</description>
     <url/>
     <licenses>
