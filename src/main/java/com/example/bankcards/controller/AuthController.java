@@ -60,12 +60,11 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(
+    public void logout(
             @CookieValue("__Host-refresh") String refreshToken,
             HttpServletResponse response) {
 
         authService.logout(refreshToken);
         cookieService.removeAll(response);
-        return ResponseEntity.ok().build();
     }
 }
