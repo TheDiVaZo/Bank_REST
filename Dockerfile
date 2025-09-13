@@ -1,13 +1,12 @@
 # building
-FROM eclipse-temurin:17-jdk-jammy AS build
+FROM maven:3.9-eclipse-temurin-17 AS build
 WORKDIR /app
 
 COPY .env ./
-COPY .mvn/ .mvn/
-COPY mvnw pom.xml ./
+COPY pom.xml ./
+RUN mvn -B -q -DskipTests dependency:go-offline
 COPY src ./src
-RUN ./mvnw dependency:go-offline
-RUN ./mvnw clean package -DskipTests
+RUN mvn -B -q -DskipTests package
 # ----
 
 # test launcher
@@ -22,9 +21,9 @@ COPY --from=build /app .
 FROM eclipse-temurin:17-jdk-jammy
 WORKDIR /app
 
-COPY --from=build /app/target/app.jar app.jar
+COPY --from=build /app/target/*.jar app.jar
 COPY --from=build /app/.env .
 # ----
 
 EXPOSE 8080
-ENTRYPOINT ["app.jar", "java", "-jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]

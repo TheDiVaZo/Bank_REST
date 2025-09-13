@@ -69,4 +69,4 @@ networks:
   app-net:
 
 volumes:
-  postgres_data:
+  pgdata:
