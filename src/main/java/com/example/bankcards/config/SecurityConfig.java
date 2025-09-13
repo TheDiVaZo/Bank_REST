@@ -44,7 +44,7 @@ public class SecurityConfig {
                         .configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.ignoringRequestMatchers(
                         "/swagger-ui/**",
-                        "/api-docs/**",
+                        "/docs/**",
                         "/swagger-resources/**",
                         "/webjars/**",
                         "/swagger-ui.html",
@@ -57,7 +57,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/swagger-ui.html",
                                 "/swagger-ui/**",
-                                "/api-docs/**",
+                                "/docs/**",
                                 "/swagger-resources/**",
                                 "/webjars/**",
                                 "/swagger-ui/index.html",
@@ -66,13 +66,13 @@ public class SecurityConfig {
                                 "/swagger-ui/swagger-ui-bundle.js",
                                 "/swagger-ui/swagger-ui-standalone-preset.js"
                         ).permitAll()
-                        .requestMatchers("/api/auth/register").permitAll()
-                        .requestMatchers("/api/auth/login").permitAll()
-                        .requestMatchers("/api/auth/validate").permitAll()
-                        .requestMatchers("/api/auth/refresh").authenticated()
-                        .requestMatchers("/api/auth/logout").authenticated()
-                        .requestMatchers("/api/admin").hasRole("ADMIN")
-                        .requestMatchers("/api/users/**").hasAnyRole("USER")
+                        .requestMatchers("/auth/register").permitAll()
+                        .requestMatchers("/auth/login").permitAll()
+                        .requestMatchers("/auth/validate").permitAll()
+                        .requestMatchers("/auth/refresh").authenticated()
+                        .requestMatchers("/auth/logout").authenticated()
+                        .requestMatchers("/admin").hasRole("ADMIN")
+                        .requestMatchers("/users/**").hasAnyRole("USER")
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(exception -> exception

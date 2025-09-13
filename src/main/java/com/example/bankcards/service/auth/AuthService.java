@@ -6,7 +6,7 @@ import com.example.bankcards.dto.user.UserRegistrationRequest;
 
 public interface AuthService {
 
-    UserAuthResponse registerUser(UserRegistrationRequest userRegistrationRequest);
+    UserAuthResponse registrationUser(UserRegistrationRequest userRegistrationRequest);
 
     UserAuthResponse loginUser(UserLoginRequest userLoginRequest);
 

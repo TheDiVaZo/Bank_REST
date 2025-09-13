@@ -34,11 +34,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
-        if (request.getServletPath().startsWith("/api/auth/register") ||
-                request.getServletPath().startsWith("/api/auth/login") ||
-                request.getServletPath().startsWith("/api/auth/validate") ||
+        if (request.getServletPath().startsWith("/auth/register") ||
+                request.getServletPath().startsWith("/auth/login") ||
+                request.getServletPath().startsWith("/auth/validate") ||
                 request.getServletPath().startsWith("/swagger-ui") ||
-                request.getServletPath().startsWith("/api-docs") ||
+                request.getServletPath().startsWith("/docs") ||
                 request.getServletPath().startsWith("/webjars/")) {
             filterChain.doFilter(request, response);
             return;
@@ -57,7 +57,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 throw new InvalidTokenException("Invalid access token!");
             }
 
-            if (!request.getServletPath().equals("/api/auth/refresh")) {
+            if (!request.getServletPath().equals("/auth/refresh")) {
                 String refreshToken = extractRefreshToken(request);
                 if (refreshToken == null) {
                     throw new InvalidTokenException("Refresh token required!");

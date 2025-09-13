@@ -34,7 +34,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public UserAuthResponse registerUser(UserRegistrationRequest userRegistrationRequest) {
+    public UserAuthResponse registrationUser(UserRegistrationRequest userRegistrationRequest) {
         if (userRepository.existsByPhoneNumber(userRegistrationRequest.getPhoneNumber())) {
             throw new UserExistException("User with this email or phone number already exists!");
         }
