@@ -41,51 +41,44 @@ public class CardServiceImpl implements CardService {
         this.userRepository = userRepository;
     }
 
-    //TODO: нормально обработать ситуацию, когда сгенерированный рандомно номер уже есть в базе
     @Override
     @Transactional
     public CardDto create(UUID userId) {
         Objects.requireNonNull(userId, "userId");
-        String pan = CardUtil.generateCardNumber();
-        String last4 = pan.substring(pan.length() - 4);
-        String fp  = crypto.fingerprint(pan);
 
-        if (cardRepository.existsByFingerprint(fp)) {
-            throw new ServiceErrorException("Card already exists (fingerprint). Retray please");
-        }
-        if (cardRepository.existsByUser_IdAndPanLast4(userId, last4)) {
-            throw new ServiceErrorException("User already has a card with these last4. Retray please");
-        }
-        if (!userRepository.existsById(userId)) {
-            throw new UserNotFoundException("User not found");
-        }
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        String enc = crypto.encrypt(pan);
+        // до 5 попыток сгенерировать уникальный PAN
+        for (int i = 0; i < 5; i++) {
+            String pan   = CardUtil.generateCardNumber();
+            String last4 = pan.substring(pan.length() - 4);
+            String fp    = crypto.fingerprint(pan);
 
-        try {
-            User userRef = userRepository.getReferenceById(userId);
-            Card.CardBuilder builder = Card.builder();
-            builder.user(userRef);
-            builder.panEncrypted(enc);
-            builder.panLast4(last4);
-            builder.fingerprint(fp);
-            builder.cardHolder(
-                    String.format("%s %s", userRef.getFirstName(), userRef.getLastName())
-                            .toUpperCase()
-            );
-            builder.expiryDate(LocalDate.now().withDayOfMonth(1).plusYears(5));
-            builder.balance(java.math.BigDecimal.ZERO);
-            builder.status(CardStatus.ACTIVE);
-            Card card = builder
+            if (cardRepository.existsByUser_IdAndPanLast4(user.getId(), last4)) {
+                continue; // пробуем заново
+            }
+
+            String enc = crypto.encrypt(pan);
+            Card card = Card.builder()
+                    .user(user)
+                    .panEncrypted(enc)
+                    .panLast4(last4)
+                    .fingerprint(fp)
+                    .cardHolder((user.getFirstName() + " " + user.getLastName()).toUpperCase())
+                    .expiryDate(LocalDate.now().withDayOfMonth(1).plusYears(5))
+                    .balance(BigDecimal.ZERO)
+                    .status(CardStatus.ACTIVE)
                     .build();
-            card = cardRepository.save(card);
-            cardRepository.flush();
-            return mapper.toDto(card);
-        } catch (DataIntegrityViolationException exception) {
-            throw new ServiceErrorException("Constraint violation", exception);
-        } catch (Exception exception) {
-            throw new ServiceErrorException(exception.getMessage());
+
+            try {
+                return mapper.toDto(cardRepository.save(card));
+            } catch (DataIntegrityViolationException e) {
+                // мог сработать уникальный индекс fingerprint -> повторим
+                if (i == 4) throw new ServiceErrorException("Card number collision. Retry later", e);
+            }
         }
+        throw new ServiceErrorException("Unable to generate unique card. Retry later");
     }
 
     @Override
@@ -110,7 +103,7 @@ public class CardServiceImpl implements CardService {
     @Override
     public String getPan(UUID userId, String panLast4) {
         Optional<String> panEncrypted = cardRepository.findPanEncryptedByUserIdAndLast4(userId, panLast4);
-        if (panEncrypted.isEmpty()) throw new CardNotFoundException("Card for '"+userId+"' and '"+panEncrypted+"' not found");
+        if (panEncrypted.isEmpty()) throw new CardNotFoundException("Card for '"+userId+"' not found");
         return crypto.decrypt(panEncrypted.get());
     }
 
@@ -154,6 +147,8 @@ public class CardServiceImpl implements CardService {
 
             validTransaction(fromCard, toCard, amount);
 
+            transaction(fromCard, toCard, amount);
+
             cardRepository.flush();
         } catch (Exception exception) {
             throw new CardOperationException(exception);
@@ -161,6 +156,9 @@ public class CardServiceImpl implements CardService {
     }
 
     public void transaction(Card fromCard, Card toCard, BigDecimal amount) {
+        if (fromCard.getId().equals(toCard.getId())) {
+            throw new CardOperationException("Cannot transfer to the same card");
+        }
         fromCard.setBalance(fromCard.getBalance().subtract(amount));
         toCard.setBalance(toCard.getBalance().add(amount));
         cardRepository.saveAll(List.of(fromCard, toCard));
