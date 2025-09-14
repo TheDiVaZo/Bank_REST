@@ -1,1 +1,435 @@
-# Здесь будет OpenAPI описание всех доступных эндпоинтов и моделей данных.
+openapi: 3.1.0
+info:
+  title: Bank REST API
+  description: API для управления банковскими картами и пользователями
+  contact:
+    email: thedivazo.dev@mail.ru
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+    description: Generated server url
+tags:
+  - name: Authentication API
+    description: Аутентификация и управление сессиями
+  - name: Admin API
+    description: Операции для администраторов
+  - name: User API
+    description: Операции для авторизованных пользователей
+paths:
+  /auth/reg:
+    post:
+      summary: "POST auth/reg"
+      operationId: "registrationUser"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserRegistrationRequest"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/UserAuthResponse"
+  /auth/login:
+    post:
+      summary: "POST auth/login"
+      operationId: "loginUser"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserLoginRequest"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/UserAuthResponse"
+  /auth/refresh:
+    post:
+      summary: "POST auth/refresh"
+      operationId: "refresh"
+      parameters:
+        - name: "__Host-refresh"
+          in: "cookie"
+          required: false
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/UserAuthResponse"
+  /auth/logout:
+    post:
+      summary: "POST auth/logout"
+      operationId: "logout"
+      parameters:
+        - name: "__Host-refresh"
+          in: "cookie"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+  /user/cards:
+    get:
+      summary: "GET user/cards"
+      operationId: "getUserCards"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/CardDto"
+  /user/card/block:
+    post:
+      summary: "POST user/card/block"
+      operationId: "blockCard"
+      parameters:
+        - name: "panLast4"
+          in: "query"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+  /user/transaction:
+    post:
+      summary: "POST user/transaction"
+      operationId: "transfer"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransactionRequest"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+  /user/profile:
+    post:
+      summary: "POST user/profile"
+      operationId: "getUser"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/UserDto"
+  /admin/card:
+    post:
+      summary: "POST admin/card"
+      operationId: "createCard"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CardCreateRequest"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/CardDto"
+    delete:
+      summary: "DELETE admin/card"
+      operationId: "deleteCard"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CardOperationRequest"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+  /admin/card/activate:
+    post:
+      summary: "POST admin/card/activate"
+      operationId: "activateCard"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CardOperationRequest"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/CardDto"
+  /admin/card/block:
+    post:
+      summary: "POST admin/card/block"
+      operationId: "blockCard"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CardOperationRequest"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/CardDto"
+  /admin/cards:
+    get:
+      summary: "GET admin/cards"
+      operationId: "getAllCards"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/CardDto"
+  /admin/cards/{userId}:
+    get:
+      summary: "GET admin/cards/{userId}"
+      operationId: "getUserCards"
+      parameters:
+        - name: "userId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/CardDto"
+  /admin/users:
+    get:
+      summary: "GET admin/users"
+      operationId: "getAllUsers"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/UserDto"
+  /admin/user/{userId}:
+    get:
+      summary: "GET admin/user/{userId}"
+      operationId: "getUserById"
+      parameters:
+        - name: "userId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/UserDto"
+    patch:
+      summary: "PATCH admin/user/{userId}"
+      operationId: "updateUserById"
+      parameters:
+        - name: "userId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserUpdateRequest"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/UserDto"
+    delete:
+      summary: "DELETE admin/user/{userId}"
+      operationId: "deleteUser"
+      parameters:
+        - name: "userId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Void"
+  /admin/user/phone:
+    get:
+      summary: "GET admin/user/phone"
+      operationId: "getUserByEmail"
+      parameters:
+        - name: "phoneNumber"
+          in: "query"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/UserDto"
+  /admin/user:
+    post:
+      summary: "POST admin/user"
+      operationId: "createUser"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserRegistrationRequest"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/UserDto"
+components:
+  schemas:
+    CardCreateRequest:
+      type: "object"
+      properties:
+        userId:
+          type: "string"
+          format: "uuid"
+    BigDecimal:
+      type: "object"
+      properties: { }
+    CardDto:
+      type: "object"
+      properties:
+        panLast4:
+          type: "string"
+        expiryDate:
+          type: "string"
+          format: "date"
+        cardHolder:
+          type: "string"
+        balance:
+          $ref: "#/components/schemas/BigDecimal"
+        status:
+          type: "string"
+          enum:
+            - "ACTIVE"
+            - "BLOCKED"
+            - "EXPIRED"
+    CardOperationRequest:
+      type: "object"
+      properties:
+        userId:
+          type: "string"
+          format: "uuid"
+        panLast4:
+          type: "string"
+    UserDto:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          format: "uuid"
+        firstName:
+          type: "string"
+        lastName:
+          type: "string"
+        phoneNumber:
+          type: "string"
+        role:
+          type: "string"
+          enum:
+            - "ADMIN"
+            - "USER"
+        createdAt:
+          type: "string"
+          format: "date-time"
+    UserUpdateRequest:
+      type: "object"
+      properties:
+        firstName:
+          type: "string"
+        lastName:
+          type: "string"
+        phoneNumber:
+          type: "string"
+        role:
+          type: "string"
+          enum:
+            - "ADMIN"
+            - "USER"
+    UserRegistrationRequest:
+      type: "object"
+      properties:
+        firstName:
+          type: "string"
+        lastName:
+          type: "string"
+        phoneNumber:
+          type: "string"
+        password:
+          type: "string"
+    Void:
+      type: "object"
+      properties: { }
+    UserAuthResponse:
+      type: "object"
+      properties:
+        accessToken:
+          type: "string"
+        refreshToken:
+          type: "string"
+        userDto:
+          $ref: "#/components/schemas/UserDto"
+    UserLoginRequest:
+      type: "object"
+      properties:
+        phoneNumber:
+          type: "string"
+        password:
+          type: "string"
+    TransactionRequest:
+      type: "object"
+      properties:
+        fromPanLast4:
+          type: "string"
+        toPanLast4:
+          type: "string"
+        amount:
+          $ref: "#/components/schemas/BigDecimal"
