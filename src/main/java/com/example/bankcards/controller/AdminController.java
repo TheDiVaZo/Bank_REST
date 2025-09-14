@@ -5,6 +5,7 @@ import com.example.bankcards.dto.card.CardDto;
 import com.example.bankcards.dto.card.CardOperationRequest;
 import com.example.bankcards.dto.user.UserDto;
 import com.example.bankcards.dto.user.UserRegistrationRequest;
+import com.example.bankcards.dto.user.UserUpdateRequest;
 import com.example.bankcards.service.card.CardService;
 import com.example.bankcards.service.user.UserService;
 import com.example.bankcards.util.Patterns;
@@ -82,8 +83,17 @@ public class AdminController {
 
     @GetMapping("/user/{userId}")
     public UserDto getUserById(
-            @PathVariable UUID userId) {
+            @PathVariable UUID userId
+    ) {
         return userService.getById(userId);
+    }
+
+    @PatchMapping("/user/{userId}")
+    public UserDto updateUserById(
+            @PathVariable UUID userId,
+            @RequestBody UserUpdateRequest updateRequest
+    ) {
+        return userService.update(userId, updateRequest);
     }
 
     @GetMapping("/user/phone")

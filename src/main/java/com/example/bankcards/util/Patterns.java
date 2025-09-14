@@ -9,4 +9,6 @@ public enum Patterns {;
     public static final @RegExp String NUMBER_4_CARD = "[0-9]{4}";
 
     public static final @RegExp String NUMBER_CARD = "[0-9]{16}";
+
+    public static final @RegExp String NOT_BLANK_OR_NULL = ".*\\S.*";
 }

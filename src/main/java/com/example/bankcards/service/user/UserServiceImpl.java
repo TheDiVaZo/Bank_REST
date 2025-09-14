@@ -3,10 +3,12 @@ package com.example.bankcards.service.user;
 import com.example.bankcards.dto.user.UserDto;
 import com.example.bankcards.dto.user.UserMapper;
 import com.example.bankcards.dto.user.UserRegistrationRequest;
+import com.example.bankcards.dto.user.UserUpdateRequest;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.exception.user.UserExistException;
 import com.example.bankcards.exception.user.UserNotFoundException;
 import com.example.bankcards.repository.UserRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -54,6 +56,22 @@ public class UserServiceImpl implements UserService {
     public void delete(UUID userId) {
         if (!userRepository.existsById(userId)) throw new UserNotFoundException("User not found");
         userRepository.deleteById(userId);
+    }
+
+    @Override
+    @Transactional
+    public UserDto update(UUID userId, UserUpdateRequest userUpdateRequest) {
+        try {
+            User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
+            if (userUpdateRequest.getFirstName() != null) user.setFirstName(userUpdateRequest.getFirstName());
+            if (userUpdateRequest.getLastName() != null) user.setLastName(userUpdateRequest.getLastName());
+            if (userUpdateRequest.getPhoneNumber() != null) user.setPhoneNumber(userUpdateRequest.getPhoneNumber());
+            if (userUpdateRequest.getRole() != null) user.setRole(userUpdateRequest.getRole());
+            userRepository.flush();
+            return userMapper.toDto(user);
+        } catch (DataIntegrityViolationException exception) {
+            throw new UserExistException("User is already registered with number");
+        }
     }
 
     @Override
